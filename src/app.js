@@ -1,6 +1,7 @@
 import Header from './components/header.js';
 import Component from './core/component.js';
-import TechBlogPage from './pages/tech-blog-page.js';
+import createPages from './pages/index.js';
+import Router from './routes/router.js';
 
 export default class App extends Component {
   _template() {
@@ -15,8 +16,15 @@ export default class App extends Component {
 
   _componentDidUpdate() {
     const $header = this._$target.querySelector('[data-component="header"]');
-    const $app = this._$target.querySelector('[data-component="app"]');
     new Header($header);
-    new TechBlogPage($app);
+    const $app = this._$target.querySelector('[data-component="app"]');
+    const pages = createPages($app);
+
+    const router = new Router($app);
+    router
+      .addRoute('/', pages.home)
+      .addRoute('/tech', pages.tech)
+      .addRoute('/tech/:id', pages.detail)
+      .start();
   }
 }

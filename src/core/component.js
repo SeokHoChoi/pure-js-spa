@@ -6,6 +6,10 @@ export default class Component {
 
   constructor($target) {
     this.#$target = $target;
+    this._$state;
+
+    this._setupInitialState();
+    this._setEvent();
     this._render();
   }
 
@@ -44,5 +48,37 @@ export default class Component {
   _render() {
     this._$target = this._template();
     this._componentDidUpdate();
+  }
+
+  /**
+   * 컴포넌트 에서의 초기 state 설정입니다.
+   */
+  _setupInitialState() {}
+
+  /**
+   * 각 컴포넌트에서 필요한 상세 이벤트를 설계합니다.
+   * @description - 설계된 이벤트 생성은 _addEvent() 메서드를 통해 이루어집니다.
+   */
+  _setEvent() {}
+
+  /** 상태 변경함수 입니다.
+   * @param {*} newState - 기존의 상태를 새로운 상태로 변경할 상태가 들어옵니다.
+   * @description 상태를 변경 후 _render() 메서드를 호출하여 브라우저 출력 내용을 state에 종속시킵니다.
+   */
+  _setState(newState) {
+    this._$state = { ...this._$state, ...newState };
+    this._render();
+  }
+
+  /** 이벤트 등록을 추상화합니다.
+   * @param {*} eventType - 'click' 등의 타입을 정하는 인자를 받습니다.
+   * @param {*} selector - 어떤 요소를 선택할지에 대한 인자를 받습니다.
+   * @param {*} callback - 각 컴포넌트에서 어떤 동작을 수행할지에 대한 콜백 함수를 인자로 받습니다.
+   */
+  _addEvent(eventType, selector, callback) {
+    this._$target.addEventListener(eventType, (event) => {
+      if (!event.target.closest(selector)) return false;
+      callback(event);
+    });
   }
 }

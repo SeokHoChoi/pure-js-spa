@@ -1,19 +1,36 @@
+import { get } from '../api/mockApi.js';
 import Component from '../core/component.js';
-import Tech from '../components/tech.js';
+import TechDetailPage from './tech-detail-page.js';
 
 export default class TechBlogPage extends Component {
-  _template() {
-    return `
-        <div data-component="tech-blog-page">
-          TechBlogPage
-        </div>
-      `;
+  _setupInitialState() {
+    get('/src/data/mockDataOfTech.json').then((data) => {
+      this._setState(data);
+    });
   }
 
-  _componentDidUpdate() {
-    const $techBlogPage = this._$target.querySelector(
-      '[data-component="tech-blog-page"]'
-    );
-    new Tech($techBlogPage);
+  _template() {
+    const { techs } = this._$state || { techs: [] };
+
+    return ` 
+      <div data-component="tech-blog-page">
+        ${techs
+          .map((tech) => {
+            return `
+              <a data-navigation href="/tech/${tech.id}" key=${tech.id}>
+                <img src=${tech.src} alt="${tech.alt}" />
+                <div>
+                  <h2>${tech.title}</h2>
+                  <p>${tech.desc}</p>
+                  <time datetime=${tech.date}>${tech.date.replace(
+              /-/g,
+              '. '
+            )}</time>
+                </div>
+              </a>`;
+          })
+          .join('')}
+      </div>
+    `;
   }
 }
